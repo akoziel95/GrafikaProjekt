@@ -159,11 +159,12 @@ function render(allObjects, ctx, dx, dy, howFar) {
 	ctx.clearRect(0, 0, 2*dx, 2*dy);
 	var objectsToRender = refreshObjectsToRender(allObjects);
 	// For each object
-	for (var i = 0, n_obj = objectsToRender.length; i < n_obj; ++i) {
-		// For each face
-		for (var j = 0, n_faces = objectsToRender[i].faces.length; j < n_faces; ++j) {
+	var facesToRender = getSortedFacesToRender(objectsToRender);
+	
+	
+		for (var j = 0, n_faces = facesToRender.length; j < n_faces; ++j) {
 			// Current face
-			var face = objectsToRender[i].faces[j];
+			var face = facesToRender[j];
 
 			// Draw the first vertex		
 			var P = project(face[0], howFar);
@@ -176,12 +177,13 @@ function render(allObjects, ctx, dx, dy, howFar) {
 				ctx.lineTo(P.x + dx, -P.y + dy);
 			}
 
+
 			// Close the path and draw the face
 			ctx.closePath();
 			ctx.stroke();
 			ctx.fill();
 		}
-	}
+	
 }
 
 function refreshObjectsToRender(objects)
@@ -211,6 +213,36 @@ function getAdditionalDistanceFromYForObject(object){
 			
 }
 
+function getSortedFacesToRender(objects){
+	var faces = [];
+	for (var i = 0, n_obj = objects.length; i < n_obj; ++i) {
+		// For each face
+		for (var j = 0, n_faces = objects[i].faces.length; j < n_faces; ++j) {
+			// Current face
+			faces.push(objects[i].faces[j])			
+		}
+	}	
+	return faces.sort(compare);
+}
+
+function compare(a,b) {
+	var aY = 0;
+	var bY= 0;
+	for(var i =0; i< a.length; i++){
+		aY += a[i].y
+	}
+	for(var i =0; i< b.length; i++){
+		bY += b[i].y
+	}
+	aY /= a.length;
+	bY /= b.length;
+  if (aY > bY)
+    return -1;
+  if (aY < bY)
+    return 1;
+  return 0;
+}
+
 (function() {
 	// Fix the canvas width and height
 	var canvas = document.getElementById('cnv');
@@ -221,8 +253,8 @@ function getAdditionalDistanceFromYForObject(object){
 
 	// Objects style
 	var ctx = canvas.getContext('2d');
-	ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-	ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
+	ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
+	ctx.fillStyle = 'rgba(0, 150, 255, 1)';
 
 	// Create the cube
 	
