@@ -8,8 +8,18 @@ var howFar = 200;
 var rotateX = 0;
 var rotateY = 0;
 
+var fillColor = getRandomColor();
 
+var objects = [];
 
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 function initButtons() {
   // transform functions bindings to buttons
@@ -243,7 +253,10 @@ function render(allObjects, ctx, dx, dy, howFar) {
 
     // Close the path and draw the face
     ctx.closePath();
+    ctx.strokeStyle = "#FFFFFF"
+    ctx.lineWidth = 2;
     ctx.stroke();
+    ctx.fillStyle = fillColor;
     ctx.fill();
   }
 
@@ -375,7 +388,7 @@ $(document).ready(function() {
   var rightBackCuboid= new Cuboid(rightback, 100, 100, 400);
   var leftBackCuboid= new Cuboid(leftback, 100, 100, 400);
 
-  var objects = [rightCuboid, leftCuboid, rightBackCuboid, leftBackCuboid, wall];
+  objects = [rightCuboid, leftCuboid, rightBackCuboid, leftBackCuboid, wall];
 
 
   function renderScene() {
@@ -435,20 +448,6 @@ $(document).ready(function() {
     buttonRotate();
     renderScene();
   }
-
-  // var rotateLeftAxis = function() {
-  //   rotateX += 5;
-  //   rotateY -= 5;
-  //   buttonRotate();
-  //   renderScene();
-  // }
-  //
-  // var rotateRightAxis = function() {
-  //   rotateX -= 5;
-  //   rotateY += 5;
-  //   buttonRotate();
-  //   renderScene();
-  // }
 
   var zoomIn = function() {
     howFar += 5;
@@ -517,9 +516,6 @@ $(document).ready(function() {
   $("#zoomout").click(function() {
     zoomOut();
   });
-
-
-
 
 
   render(objects, ctx, dx, dy, howFar);
