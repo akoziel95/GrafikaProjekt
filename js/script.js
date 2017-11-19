@@ -130,8 +130,8 @@ var BottomWall = function (center, sideA, sideB)
 
   this.vertices= [
     new Vertex( center.x + a, center.y + b, center.z),
-    new Vertex( center.x + a, center.y - b, center.z),
-    new Vertex( center.x - a, center.y - b, center.z),
+    new Vertex( center.x + a, center.y - b, center.z + 40),
+    new Vertex( center.x - a, center.y - b, center.z + 40),
     new Vertex( center.x - a, center.y + b, center.z),
   ]
   this.faces = [
@@ -190,6 +190,7 @@ function refreshObjectsToRender(objects)
   }
   return objectsToRender;
 }
+
 function getAdditionalDistanceFromYForObject(object){
   switch(object.type){
     case "Cube":
@@ -221,9 +222,9 @@ function compare(a,b) {
   aY /= a.length;
   bY /= b.length;
   if (aY > bY)
-  return -1;
+    return -1;
   if (aY < bY)
-  return 1;
+    return 1;
   return 0;
 }
 
@@ -270,7 +271,6 @@ function GetNormalVector(face){
   vector.x = AB.y * BC.z - AB.z * BC.y;
   vector.y = AB.z * BC.x - AB.x * BC.z;
   vector.z = AB.x * BC.y - AB.y * BC.x;
-
 
   return vector;
 }
