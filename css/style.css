@@ -1,0 +1,296 @@
+html, body {
+  font-family: 'InconsolataBold', monospace;
+  height: 100%;
+}
+
+.container {
+  height: 100%;
+}
+
+.spacerow {
+  height: 5%;
+}
+
+#boardrow {
+  height: 70%;
+  /*background-color: red;*/
+}
+
+#buttonsrow {
+  height: 15%;
+}
+
+#canvasboard0 {
+  /*background-color: #E8DEDC;*/
+  height: 100%;
+  border: 2px solid;
+  border-color: #B0B0B0;
+}
+
+#buttons0 {
+  /*background-color: #F2E8E5;*/
+  height: 100%;
+}
+
+canvas {
+  background-color: #F2F2F2;
+}
+
+.buttonbar {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.translationsbuttons, .rotationsbuttons, .zoombuttons {
+  padding: 5px;
+  display: inline-block;
+}
+
+.translationsbuttons {
+  background-color: #E1FFFE;
+}
+
+.rotationsbuttons {
+  background-color: #E8FFD9;
+}
+
+.zoombuttons {
+  background-color: #FFF7B7;
+}
+
+.playground {
+  width: 1250px;
+  height: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -625px;
+  background-color: red;
+}
+
+.content {
+  position: relative;
+}
+
+#board {
+  height: 500px;
+    position: relative;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.05, 1.05);
+  }
+  100% {
+    -webkit-transform: scale(1, 1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.05, 1.05);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+#emptyboardinfo {
+  position: absolute;
+  width: 600px;
+  height: 400px;
+  border: 2px grey;
+  top: 50%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -300px;
+  text-align: center;
+
+  border-radius: 15px;
+  border: 3px solid #999999;
+
+  -webkit-animation: pulse 2s linear infinite;
+  animation: pulse 2s linear infinite;
+}
+
+.boardbottom {
+  top: 100%;
+  /*background-color: rgba(55, 55, 55, 0.1);*/
+  background-color: green;
+}
+
+span.greeting, span.info {
+  display: block;
+  color: #656565;
+}
+
+span.greeting {
+  font-size: 64px;
+  margin: 25px;
+}
+
+span.info {
+  font-size: 32px;
+  margin: 25px;
+}
+
+.buttons, .layer, .paths {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.buttons {
+  width: 20%;
+}
+
+.buttonsdiv {
+    text-align: center;
+    margin: 5px;
+    margin-top: 15px;
+}
+
+.layer {
+  width: 60%;
+    position: relative;
+}
+
+.layercanvasdiv {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    position: absolute;
+    z-index: -1;
+}
+
+.paths {
+  width: 20%;
+}
+
+
+
+input {
+  text-align: center;
+}
+
+.layerheightinputdiv {
+  display: flex;
+  align-items: center;
+}
+
+.layerheightinput {
+  width: 60px;
+  height: 25px;
+  display: table;
+  margin: 2px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.inputspan {
+  font-size: 10px;
+  display: block;
+  text-align: center;
+}
+
+.materialselect {
+  width: 70px;
+  height: 25px;
+  display: inline-block;
+  margin: 2px;
+  font-size: 75%;
+  margin: 0 auto;
+}
+
+div.material-0 {
+    background-color: rgba(95, 8, 255, 0.2);
+}
+
+div.material-1 {
+    background-color: rgba(0, 66, 35, 0.2);
+}
+
+.deletebutton {
+  height: 28px;
+  margin-top: 14px;
+  width: 35px;
+}
+
+.pathwidthinput {
+  width: 40px;
+  height: 25px;
+  vertical-align: top;
+    font-size: 12px;
+ /*   margin-bottom: 35px;*/
+}
+
+.layerdeletebuttondiv {
+  width: 25%;
+}
+
+.layerheightinputdiv {
+  width: 40%;
+}
+
+.layermaterialinputdiv {
+  width: 35%;
+}
+
+.addpathbuttondiv, .deletepathbuttondiv {
+  width: 50%;
+}
+
+.addpathbutton, .deletepathbutton {
+  height: 28px;
+}
+
+.layerbuttons {
+  margin: 5px;
+  margin-top: 30px;
+}
+
+.outputbutton {
+  margin: 5px;
+}
+
+.layerheightinputdiv, .layermaterialinputdiv, .layerdeletebuttondiv,
+.addpathbuttondiv, .deletepathbuttondiv, .pathdiv {
+  height: 100%;
+  display: inline-block;
+  float: left;
+  text-align: center;
+}
+
+.deletepathbuttondiv {
+  text-align: left;
+}
+
+.layerheightinputdiv:before, .layermaterialinputdiv:before, .layerdeletebuttondiv:before,
+.addpathbuttondiv:before, .deletepathbuttondiv:before,
+.pathdiv:before {
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  content: ' ';
+}
+
+.pathdiv:before {
+  margin-bottom: -33px;
+}
+
+.pathspacediv:before {
+  vertical-align: bottom;
+  margin-bottom: -5px;
+}
+
+.inputwrapper {
+  display: inline-block;
+  vertical-align: middle;
+}
