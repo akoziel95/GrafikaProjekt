@@ -3,6 +3,75 @@ var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 setCanvasSize(canvas);
 
+var howFar = 200;
+
+var rotateX = 0;
+var rotateY = 0;
+
+
+
+
+function initButtons() {
+  // transform functions bindings to buttons
+    $("#transformup").click(function() {
+      moveUp();
+    });
+
+    $("#transformdown").click(function() {
+      moveDown();
+    });
+
+    $("#transformleft").click(function() {
+      moveLeft();
+    });
+
+    $("#transformright").click(function() {
+      moveRight();
+    });
+
+    $("#transformforward").click(function() {
+      moveForward();
+    });
+
+    $("#transformbackward").click(function() {
+      moveBackward();
+    });
+
+    // rotate functions bindings to buttons
+    $("#rotateup").click(function() {
+      rotateUp();zoomIn
+    });
+
+    $("#rotatedown").click(function() {
+      rotateDown();
+    });
+
+    $("#rotateleft").click(function() {
+      rotateLeft();
+    });
+
+    $("#rotateright").click(function() {
+      rotateRight();
+    });
+
+    $("#rotateleftaxis").click(function() {
+      rotateLeftAxis();
+    });
+
+    $("#rotaterightaxis").click(function() {
+      rotateRightAxis();
+    });
+
+    // zoom functions bindings to buttons
+    $("#zoomin").click(function() {
+      zoomIn();
+    });
+
+    $("#zoomout").click(function() {
+      zoomOut();
+    });
+}
+
 function setCanvasSize(canvas) {
   canvas.style.width = '100%';
   canvas.style.height = '100%';
@@ -309,9 +378,149 @@ $(document).ready(function() {
   var objects = [rightCuboid, leftCuboid, rightBackCuboid, leftBackCuboid, wall];
 
 
+  function renderScene() {
+    render(objects, ctx, dx, dy, howFar);
+  }
+
+  var moveRight = function() {
+    move(new Vertex(-10, 0 , 0));
+    renderScene();
+  };
+
+  var moveLeft = function() {
+    move(new Vertex(10, 0 , 0));
+    renderScene();
+  };
+
+  function moveUp() {
+    move(new Vertex(0, 0 , -10));
+    renderScene();
+  };
+
+  var moveDown = function() {
+    move(new Vertex(0, 0 , 10));
+    renderScene();
+  };
+
+  var moveForward = function() {
+    move(new Vertex(0, -10 , 0));
+    renderScene();
+  };
+
+  var moveBackward = function() {
+    move(new Vertex(0, 10 , 0));
+    renderScene();
+  };
+
+  var rotateUp = function() {
+    rotateY -= 5;
+    buttonRotate();
+    renderScene();
+  }
+
+  var rotateDown = function() {
+    rotateY += 5;
+    buttonRotate();
+    renderScene();
+  }
+
+  var rotateLeft = function() {
+    rotateX -= 5;
+    buttonRotate();
+    renderScene();
+  }
+
+  var rotateRight = function() {
+    rotateX += 5;
+    buttonRotate();
+    renderScene();
+  }
+
+  // var rotateLeftAxis = function() {
+  //   rotateX += 5;
+  //   rotateY -= 5;
+  //   buttonRotate();
+  //   renderScene();
+  // }
+  //
+  // var rotateRightAxis = function() {
+  //   rotateX -= 5;
+  //   rotateY += 5;
+  //   buttonRotate();
+  //   renderScene();
+  // }
+
+  var zoomIn = function() {
+    howFar += 5;
+    renderScene()
+  };
+
+  var zoomOut = function() {
+    howFar -= 5;
+    renderScene()
+  };
+
+  $("#transformup").click(function() {
+    moveUp();
+  });
+
+  $("#transformdown").click(function() {
+    moveDown();
+  });
+
+  $("#transformleft").click(function() {
+    moveLeft();
+  });
+
+  $("#transformright").click(function() {
+    moveRight();
+  });
+
+  $("#transformforward").click(function() {
+    moveForward();
+  });
+
+  $("#transformbackward").click(function() {
+    moveBackward();
+  });
+
+  // rotate functions bindings to buttons
+  $("#rotateup").click(function() {
+    rotateUp();
+  });
+
+  $("#rotatedown").click(function() {
+    rotateDown();
+  });
+
+  $("#rotateleft").click(function() {
+    rotateLeft();
+  });
+
+  $("#rotateright").click(function() {
+    rotateRight();
+  });
+
+  // $("#rotateleftaxis").click(function() {
+  //   rotateLeftAxis();
+  // });
+  //
+  // $("#rotaterightaxis").click(function() {
+  //   rotateRightAxis();
+  // });
+
+  // zoom functions bindings to buttons
+  $("#zoomin").click(function() {
+    zoomIn();
+  });
+
+  $("#zoomout").click(function() {
+    zoomOut();
+  });
 
 
-  var howFar = 200;
+
+
 
   render(objects, ctx, dx, dy, howFar);
 
@@ -321,33 +530,49 @@ $(document).ready(function() {
     {
       case 68://d
       //alert("w prawo!");
-      move(new Vertex(10, 0 , 0));
-      break;
+        moveRight();
+        break;
       case 65://a
       //alert("w lewo!");
-      move(new Vertex(-10, 0 , 0));
-      break;
+        moveLeft();
+        break;
       case 87:// w
-      move(new Vertex(0, 0 , 10));
-      break;
+        moveUp();
+        break;
       case 83: //s
-      move(new Vertex(0, 0 , -10));
-      break;
+        moveDown();
+        break;
       case 69: //e
-      move(new Vertex(0, 10 , 0));
-      break;
+        moveForward();
+        break;
       case 82: //e
-      move(new Vertex(0, -10 , 0));
-      break;
-      case 90:
-      howFar -= 5;
-      break;
-      case 88:
-      howFar += 5;
-      break;
+        moveBackward();
+        break;
+      case 90: // Z
+        zoomIn();
+        break;
+      case 88: // X
+        zoomOut();
+        break;
+      case 189: // -
+        zoomOut();
+        break;
+      case 187: // +
+        zoomIn();
+        break;
+      case 37: // left
+        rotateLeft();
+        break;
+      case 38: // up
+        rotateUp();
+        break;
+      case 39: // right
+        rotateRight();
+        break;
+      case 40: // down
+        rotateDown();
+        break;
     }
-
-    render(objects, ctx, dx, dy, howFar);
   }
 
   var translate = function(object, vector){
@@ -417,6 +642,8 @@ $(document).ready(function() {
     mousedown = true;
     mx = evt.clientX;
     my = evt.clientY;
+    console.log(mx);
+    console.log(my);
   }
 
   function startRotation(evt) {
@@ -433,6 +660,19 @@ $(document).ready(function() {
 
       render(objects, ctx, dx, dy, howFar);
     }
+  }
+
+  function buttonRotate() {
+    var theta = rotateX * Math.PI / 360;
+    var phi = rotateY * Math.PI / 180;
+
+    for(var j = 0; j < objects.length; j++)
+    for (var i = 0; i < objects[j].vertices.length; ++i)
+    //rotate(objects[j].vertices[i], objects[j].centerPoint, theta, phi);
+    rotate(objects[j].vertices[i], wallCenter, theta, phi);
+    rotateX = 0;
+    rotateY = 0;
+    //render(objects, ctx, dx, dy, howFar);
   }
 
   function stopMove() {
