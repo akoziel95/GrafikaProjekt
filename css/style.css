@@ -1,15 +1,16 @@
 html, body {
   font-family: 'InconsolataBold', monospace;
   height: 100%;
+  text-align: center;
 }
 
 .container {
-  /*height: 80%;*/
   padding: 0px;
 }
 
 .buttonscontainer {
-  width: 1320px;
+  text-align: center;
+  width: 95%;
 }
 
 .spacerow {
@@ -20,19 +21,21 @@ html, body {
   height: 70%;
 }
 
+.buttonbar {
+  text-align: center;
+}
+
 #buttonsrow {
   height: 15%;
 }
 
 #canvasboard0 {
-  /*background-color: #E8DEDC;*/
   height: 400px;
   border: 2px solid;
   border-color: #B0B0B0;
 }
 
 #buttons0 {
-  /*background-color: #F2E8E5;*/
   height: 100%;
 }
 

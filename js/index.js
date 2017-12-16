@@ -6,413 +6,273 @@ c.width = c.offsetWidth;
 c.height = c.offsetHeight;
 width = c.width;
 height = c.height;
-//c.style.cssText = 'width:' + (width * 2) + 'px;height:' + (height*2) + 'px';
 var ctx = c.getContext('2d'),
-    data = ctx.getImageData(0, 0, width, height);
+data = ctx.getImageData(0, 0, width, height);
 
-// # The Scene
+// scena
 var scene = {};
-// ![](http://farm4.staticflickr.com/3781/10524236814_5a9c43487a_b.jpg)
-//
-// We need to define three different kinds of things in 3D space:
-// a **camera** from which we cast rays into the scene, **objects**
-// that can be hit by those rays and are drawn into the scene, and
-// **lights** that change the color of rays, by extension coloring objects.
-//
-// In this case, we define these objects as simple objects with vectors
-// defined as `{x, y, z}` objects.
 
-// ## The Camera
-//
-// Our camera is pretty simple: it's a point in space, where you can imagine
-// that the camera 'sits', a `fieldOfView`, which is the angle from the right
-// to the left side of its frame, and a `vector` which determines what
-// angle it points in.
+// kamera w scenie
 scene.camera = {
-    point: {x: -8,
-        y: 0,
-        z: 18
-    },
-    fieldOfView: 45,
-    vector: {
-        x: 0,
-        y: 3,
-        z: 0
-    }
+  point: {x: -8,
+    y: 0,
+    z: 18
+  },
+  fieldOfView: 45,
+  vector: {
+    x: 0,
+    y: 3,
+    z: 0
+  }
 };
 
+// swiatlo w scenie
 var selectedLight = 0
-lightsToSelect =[ {
-    x: -30,
-    y: -10,
-    z: 20
+lightsToSelect = [{
+  x: -30,
+  y: -10,
+  z: 20
 }]
 
-scene.lights = [
-lightsToSelect[0]];
+scene.lights = [lightsToSelect[0]];
 
-
-
-// ## Objects
-//
-// This raytracer handles sphere objects, with any color, position, radius,
-// and surface properties.
+// obiekty w scenie, kazda sfera ma punkt gdzie sie znajduje, kolor, promien
+// oraz wlasciwosci materialu
+// duza sfera
 var bigSphere = {
-        type: 'sphere',
-        point: {
-            x: 0,
-            y: 3.5,
-            z: -3
-        },
-        color: {
-            x: Math.floor(Math.random() * 256),
-            y: Math.floor(Math.random() * 256),
-            z: Math.floor(Math.random() * 256)
-        },
-        specular: 0.1,
-        lambert: 0.7,
-        ambient: 0.1,
-        radius: 3
-    }
+  type: 'sphere',
+  point: {
+    x: 0,
+    y: 3.5,
+    z: -3
+  },
+  color: {
+    x: Math.floor(Math.random() * 256),
+    y: Math.floor(Math.random() * 256),
+    z: Math.floor(Math.random() * 256)
+  },
+  specular: 0.1,
+  lambert: 0.7,
+  ambient: 0.1,
+  radius: 3
+}
 
-  var smallSphere = {
-    type: 'sphere',
-    point: {
-        x: 5,
-        y: 4.5,
-        z: -1
-    },
-    color: {
-        x: Math.floor(Math.random() * 256),
-        y: Math.floor(Math.random() * 256),
-        z: Math.floor(Math.random() * 256)
-    },
-    specular: 0.1,
-    lambert: 0.9,
-    ambient: 0.0,
-    radius: 1.2
-  }
-scene.objects = [
-    bigSphere, smallSphere
-];
+// mala sfera
+var smallSphere = {
+  type: 'sphere',
+  point: {
+    x: 5,
+    y: 4.5,
+    z: -1
+  },
+  color: {
+    x: Math.floor(Math.random() * 256),
+    y: Math.floor(Math.random() * 256),
+    z: Math.floor(Math.random() * 256)
+  },
+  specular: 0.1,
+  lambert: 0.9,
+  ambient: 0.0,
+  radius: 1.2
+}
 
-// # Throwing Rays
-//
-// This is one part where we can't follow nature exactly: technically photons
-// come out of lights, bounce off of objects, and then some hit the 'eye'
-// and many don't. Simulating this - sending rays in all directions out of
-// each light and most not having any real effect - would be too inefficient.
-//
-// Luckily, the reverse is more efficient and has practically the same result -
-// instead of rays going 'from' lights to the eye, we follow rays from the eye
-// and see if they end up hitting any features and lights on their travels.
-//
-// For each pixel in the canvas, there needs to be at least one ray of light
-// that determines its color by bouncing through the scene.
+// obiekty w scenie
+scene.objects = [bigSphere, smallSphere];
+
+// funkcja renderujaca scene
 function render(scene) {
-    // first 'unpack' the scene to make it easier to reference
-    var camera = scene.camera,
-        objects = scene.objects,
-        lights = scene.lights;
+  var camera = scene.camera,
+  objects = scene.objects,
+  lights = scene.lights;
 
-    // This process
-    // is a bit odd, because there's a disconnect between pixels and vectors:
-    // given the left and right, top and bottom rays, the rays we shoot are just
-    // interpolated between them in little increments.
-    //
-    // Starting with the height and width of the scene, the camera's place,
-    // direction, and field of view, we calculate factors that create
-    // `width*height` vectors for each ray
+  var eyeVector = Vector.unitVector(Vector.subtract(camera.vector, camera.point)),
 
-    // Start by creating a simple vector pointing in the direction the camera is
-    // pointing - a unit vector
-    var eyeVector = Vector.unitVector(Vector.subtract(camera.vector, camera.point)),
+  vpRight = Vector.unitVector(Vector.crossProduct(eyeVector, Vector.UP)),
+  vpUp = Vector.unitVector(Vector.crossProduct(vpRight, eyeVector)),
 
-        // and then we'll rotate this by combining it with a version that's turned
-        // 90° right and one that's turned 90° up. Since the [cross product](http://en.wikipedia.org/wiki/Cross_product)
-        // takes two vectors and creates a third that's perpendicular to both,
-        // we use a pure 'UP' vector to turn the camera right, and that 'right'
-        // vector to turn the camera up.
-        vpRight = Vector.unitVector(Vector.crossProduct(eyeVector, Vector.UP)),
-        vpUp = Vector.unitVector(Vector.crossProduct(vpRight, eyeVector)),
+  fovRadians = Math.PI * (camera.fieldOfView / 2) / 180,
+  heightWidthRatio = height / width,
+  halfWidth = Math.tan(fovRadians),
+  halfHeight = heightWidthRatio * halfWidth,
+  camerawidth = halfWidth * 2,
+  cameraheight = halfHeight * 2,
+  pixelWidth = camerawidth / (width - 1),
+  pixelHeight = cameraheight / (height - 1);
 
-        // The actual ending pixel dimensions of the image aren't important here -
-        // note that `width` and `height` are in pixels, but the numbers we compute
-        // here are just based on the ratio between them, `height/width`, and the
-        // `fieldOfView` of the camera.
-        fovRadians = Math.PI * (camera.fieldOfView / 2) / 180,
-        heightWidthRatio = height / width,
-        halfWidth = Math.tan(fovRadians),
-        halfHeight = heightWidthRatio * halfWidth,
-        camerawidth = halfWidth * 2,
-        cameraheight = halfHeight * 2,
-        pixelWidth = camerawidth / (width - 1),
-        pixelHeight = cameraheight / (height - 1);
+  var index, color;
+  var ray = {
+    point: camera.point
+  };
+  for (var x = 0; x < width; x++) {
+    for (var y = 0; y < height; y++) {
+      var xcomp = Vector.scale(vpRight, (x * pixelWidth) - halfWidth),
+      ycomp = Vector.scale(vpUp, (y * pixelHeight) - halfHeight);
 
-    var index, color;
-    var ray = {
-        point: camera.point
-    };
-    for (var x = 0; x < width; x++) {
-        for (var y = 0; y < height; y++) {
+      ray.vector = Vector.unitVector(Vector.add3(eyeVector, xcomp, ycomp));
 
-            // turn the raw pixel `x` and `y` values into values from -1 to 1
-            // and use these values to scale the facing-right and facing-up
-            // vectors so that we generate versions of the `eyeVector` that are
-            // skewed in each necessary direction.
-            var xcomp = Vector.scale(vpRight, (x * pixelWidth) - halfWidth),
-                ycomp = Vector.scale(vpUp, (y * pixelHeight) - halfHeight);
-
-            ray.vector = Vector.unitVector(Vector.add3(eyeVector, xcomp, ycomp));
-
-            // use the vector generated to raytrace the scene, returning a color
-            // as a `{x, y, z}` vector of RGB values
-            color = trace(ray, scene, 0);
-            index = (x * 4) + (y * width * 4),
-            data.data[index + 0] = color.x;
-            data.data[index + 1] = color.y;
-            data.data[index + 2] = color.z;
-            data.data[index + 3] = 255;
-        }
+      // uzywamy wektora aby wykonac raytrace sceny czego wynikiem jest zestaw
+      // zmiennych x, y, z bedacy wartosciami R, G, B koloru
+      color = trace(ray, scene, 0);
+      index = (x * 4) + (y * width * 4),
+      data.data[index + 0] = color.x;
+      data.data[index + 1] = color.y;
+      data.data[index + 2] = color.z;
+      data.data[index + 3] = 255;
     }
+  }
 
-    // Now that each ray has returned and populated the `data` array with
-    // correctly lit colors, fill the canvas with the generated data.
-    ctx.putImageData(data, 0, 0);
+  // wypelniamy kontekst w canvasie przygotowanymi danymi
+  ctx.putImageData(data, 0, 0);
 }
 
-// # Trace
-//
-// Given a ray, shoot it until it hits an object and return that object's color,
-// or `Vector.WHITE` if no object is found. This is the main function that's
-// called in order to draw the image, and it recurses into itself if rays
-// reflect off of objects and acquire more color.
+// funkcja liczaca slad kazdego promienia
 function trace(ray, scene, depth) {
-    // This is a recursive method: if we hit something that's reflective,
-    // then the call to `surface()` at the bottom will return here and try
-    // to find what the ray reflected into. Since this could easily go
-    // on forever, first check that we haven't gone more than three bounces
-    // into a reflection.
-    if (depth > 3) return;
+  if (depth > 3) return;
 
-    var distObject = intersectScene(ray, scene);
+  var distObject = intersectScene(ray, scene);
 
-    // If we don't hit anything, fill this pixel with the background color -
-    // in this case, white.
-    if (distObject[0] === Infinity) {
-        return Vector.WHITE;
-    }
+  // jesli nie ma zadnej kolizji to wektor jest bialy aby wtopic sie w tlo
+  if (distObject[0] === Infinity) {
+    return Vector.WHITE;
+  }
 
-    var dist = distObject[0],
-        object = distObject[1];
+  var dist = distObject[0],
+  object = distObject[1];
 
-    // The `pointAtTime` is another way of saying the 'intersection point'
-    // of this ray into this object. We compute this by simply taking
-    // the direction of the ray and making it as long as the distance
-    // returned by the intersection check.
-    var pointAtTime = Vector.add(ray.point, Vector.scale(ray.vector, dist));
+  var pointAtTime = Vector.add(ray.point, Vector.scale(ray.vector, dist));
 
-    return surface(ray, scene, object, pointAtTime, sphereNormal(object, pointAtTime), depth);
+  return surface(ray, scene, object, pointAtTime, sphereNormal(object, pointAtTime), depth);
 }
 
-// # Detecting collisions against all objects
-//
-// Given a ray, let's figure out whether it hits anything, and if so,
-// what's the closest thing it hits.
+// funkcja obliczajaca kolizje promieni ze scena
 function intersectScene(ray, scene) {
-    // The base case is that it hits nothing, and travels for `Infinity`
-    var closest = [Infinity, null];
-    // But for each object, we check whether it has any intersection,
-    // and compare that intersection - is it closer than `Infinity` at first,
-    // and then is it closer than other objects that have been hit?
-    for (var i = 0; i < scene.objects.length; i++) {
-        var object = scene.objects[i],
-            dist = sphereIntersection(object, ray);
-        if (dist !== undefined && dist < closest[0]) {
-            closest = [dist, object];
-        }
+  // na poczatku zakladamy, ze nie ma kolizji wiec promien idzie w nieskonczonosc
+  var closest = [Infinity, null];
+
+  // sprawdzamy kolizje promieni ze wszystkimi obiektami po kolei
+  for (var i = 0; i < scene.objects.length; i++) {
+    var object = scene.objects[i],
+    dist = sphereIntersection(object, ray);
+    if (dist !== undefined && dist < closest[0]) {
+      closest = [dist, object];
     }
-    return closest;
+  }
+  return closest;
 }
 
-// ## Detecting collisions against a sphere
-//
-// ![](graphics/sphereintersection.png)
-//
-// Spheres are one of the simplest objects for rays to interact with, since
-// the geometrical math for finding intersections and reflections with them
-// is pretty straightforward.
+// funkcja obliczajaca kolizje promieni ze sfera
 function sphereIntersection(sphere, ray) {
-    var eye_to_center = Vector.subtract(sphere.point, ray.point),
-        // picture a triangle with one side going straight from the camera point
-        // to the center of the sphere, another side being the vector.
-        // the final side is a right angle.
-        //
-        // This equation first figures out the length of the vector side
-        v = Vector.dotProduct(eye_to_center, ray.vector),
-        // then the length of the straight from the camera to the center
-        // of the sphere
-        eoDot = Vector.dotProduct(eye_to_center, eye_to_center),
-        // and compute a segment from the right angle of the triangle to a point
-        // on the `v` line that also intersects the circle
-        discriminant = (sphere.radius * sphere.radius) - eoDot + (v * v);
-    // If the discriminant is negative, that means that the sphere hasn't
-    // been hit by the ray
-    if (discriminant < 0) {
-        return;
-    } else {
-        // otherwise, we return the distance from the camera point to the sphere
-        // `Math.sqrt(dotProduct(a, a))` is the length of a vector, so
-        // `v - Math.sqrt(discriminant)` means the length of the the vector
-        // just from the camera to the intersection point.
-        return v - Math.sqrt(discriminant);
-    }
+  var eye_to_center = Vector.subtract(sphere.point, ray.point),
+  v = Vector.dotProduct(eye_to_center, ray.vector),
+  eoDot = Vector.dotProduct(eye_to_center, eye_to_center),
+  discriminant = (sphere.radius * sphere.radius) - eoDot + (v * v);
+
+  // jesli dyskryminanta jest ujemna to zaden promien nie dotarl do sfery
+  if (discriminant < 0) {
+    return;
+  } else {
+    // w przeciwnym wypadku zwracamy odleglosc
+    // od kamery do sfery gdzie nastapila kolizja
+    return v - Math.sqrt(discriminant);
+  }
 }
 
-// A normal is, at each point on the surface of a sphere or some other object,
-// a vector that's perpendicular to the surface and radiates outward. We need
-// to know this so that we can calculate the way that a ray reflects off of
-// a sphere.
+// funkcja obliczajaca wektor normalny dla danego punktu sfery,
+// potrzebny aby wiedziec jak promien odbija sie od sfery
 function sphereNormal(sphere, pos) {
-    return Vector.unitVector(
-        Vector.subtract(pos, sphere.point));
+  return Vector.unitVector(
+    Vector.subtract(pos, sphere.point));
 }
 
-// # Surface
-//
-// ![](http://farm3.staticflickr.com/2851/10524788334_f2e3903b36_b.jpg)
-//
-// If `trace()` determines that a ray intersected with an object, `surface`
-// decides what color it acquires from the interaction.
+  // funkcja obliczajaca kolor danej powierzchni jesli zostala wykryta kolizja
 function surface(ray, scene, object, pointAtTime, normal, depth) {
-    var b = object.color,
-        c = Vector.ZERO,
-        lambertAmount = 0;
+  var b = object.color,
+  c = Vector.ZERO,
+  lambertAmount = 0;
 
-    // **[Lambert shading](http://en.wikipedia.org/wiki/Lambertian_reflectance)**
-    // is our pretty shading, which shows gradations from the most lit point on
-    // the object to the least.
-    if (object.lambert) {
-        for (var i = 0; i < scene.lights.length; i++) {
-            var lightPoint = scene.lights[0];
-            // First: can we see the light? If not, this is a shadowy area
-            // and it gets no light from the lambert shading process.
-            if (!isLightVisible(pointAtTime, scene, lightPoint)) continue;
-            // Otherwise, calculate the lambertian reflectance, which
-            // essentially is a 'diffuse' lighting system - direct light
-            // is bright, and from there, less direct light is gradually,
-            // beautifully, less light.
-            var contribution = Vector.dotProduct(Vector.unitVector(
-                Vector.subtract(lightPoint, pointAtTime)), normal);
-            // sometimes this formula can return negatives, so we check:
-            // we only want positive values for lighting.
-            if (contribution > 0) lambertAmount += contribution;
-        }
+  // odbicie lambertowskie dzieki ktoremu mozemy zobaczyc gradacje na obiekcie
+  if (object.lambert) {
+    for (var i = 0; i < scene.lights.length; i++) {
+      var lightPoint = scene.lights[0];
+      if (!isLightVisible(pointAtTime, scene, lightPoint)) continue;
+
+      var contribution = Vector.dotProduct(Vector.unitVector(
+        Vector.subtract(lightPoint, pointAtTime)), normal);
+        if (contribution > 0) lambertAmount += contribution;
+      }
     }
 
-    // **[Specular](https://en.wikipedia.org/wiki/Specular_reflection)** is a fancy word for 'reflective': rays that hit objects
-    // with specular surfaces bounce off and acquire the colors of other objects
-    // they bounce into.
+    // odbicie lustrzane
     if (object.specular) {
-        // This is basically the same thing as what we did in `render()`, just
-        // instead of looking from the viewpoint of the camera, we're looking
-        // from a point on the surface of a shiny object, seeing what it sees
-        // and making that part of a reflection.
-        var reflectedRay = {
-            point: pointAtTime,
-            vector: Vector.reflectThrough(ray.vector, normal)
-        };
-        var reflectedColor = trace(reflectedRay, scene, ++depth);
-        if (reflectedColor) {
-            c = Vector.add(c, Vector.scale(reflectedColor, object.specular));
-        }
+      var reflectedRay = {
+        point: pointAtTime,
+        vector: Vector.reflectThrough(ray.vector, normal)
+      };
+      var reflectedColor = trace(reflectedRay, scene, ++depth);
+      if (reflectedColor) {
+        c = Vector.add(c, Vector.scale(reflectedColor, object.specular));
+      }
     }
 
-    // lambert should never 'blow out' the lighting of an object,
-    // even if the ray bounces between a lot of things and hits lights
     lambertAmount = Math.min(1, lambertAmount);
 
-    // **Ambient** colors shine bright regardless of whether there's a light visible -
-    // a circle with a totally ambient blue color will always just be a flat blue
-    // circle.
+    // ambient czyli kolor otaczajacy obiekt, nawet jesli nie ma widocznego
+    // zrodla swiatla to obiekt nadal zachowa swoje wlasciwosci kolorystyczne
     return Vector.add3(c,
-        Vector.scale(b, lambertAmount * object.lambert),
-        Vector.scale(b, object.ambient));
+      Vector.scale(b, lambertAmount * object.lambert),
+      Vector.scale(b, object.ambient));
 }
 
-// Check whether a light is visible from some point on the surface of something.
-// Note that there might be an intersection here, which is tricky - but if it's
-// tiny, it's actually an intersection with the object we're trying to decide
-// the surface of. That's why we check for `> -0.005` at the end.
-//
-// This is the part that makes objects cast shadows on each other: from here
-// we'd check to see if the area in a shadowy spot can 'see' a light, and when
-// this returns `false`, we make the area shadowy.
+// funkcja sprawdzajaca czy z danego punktu jest widoczne zrodlo swiatla
+// dzieki temu widzimy na jednych obiektach cien drugich
 function isLightVisible(pt, scene, light) {
-    var distObject =  intersectScene({
-        point: pt,
-        vector: Vector.unitVector(Vector.subtract(pt, light))
-    }, scene);
-    return distObject[0] > -0.005;
-}
-
-function switchLight() {
-    switch(selectedLight){
-        case 0:
-            scene.lights =[lightsToSelect[0]];
-            selectedLight++;
-            break;
-        case 1:
-            scene.lights =[lightsToSelect[1]];
-            selectedLight++;
-            break;
-        case 2:
-            scene.lights =[lightsToSelect[2]];
-            selectedLight++;
-            break;
-        case 3:
-            scene.lights =[lightsToSelect[3]];
-            selectedLight++;
-            break;
-        default:
-            selectedLight = 0
-            switchLight()
-            break;
-
-    }
-    render(scene);
+  var distObject =  intersectScene({
+    point: pt,
+    vector: Vector.unitVector(Vector.subtract(pt, light))
+  }, scene);
+  return distObject[0] > -0.005;
 }
 
 render(scene);
 
+// funkcje zmiany wlasciwosci obiektow
+// specular duzej sfery
 function changeBigSphereSpecular(){
-    bigSphere.specular = this.value/100;
-    render(scene);
+  bigSphere.specular = this.value/100;
+  render(scene);
 }
 
+// lambert duzej sfery
 function changeBigSphereLambert(){
-    bigSphere.lambert = this.value/100;
-    render(scene);
+  bigSphere.lambert = this.value/100;
+  render(scene);
 }
+
+// ambient duzej sfery
 function changeBigSphereAmbient(){
-    bigSphere.ambient = this.value/100;
-    render(scene);
+  bigSphere.ambient = this.value/100;
+  render(scene);
 }
 
+// specular malej sfery
 function changeSmallSphereSpecular(){
-    smallSphere.specular = this.value/100;
-    render(scene);
+  smallSphere.specular = this.value/100;
+  render(scene);
 }
 
+// lambert malej sfery
 function changeSmallSphereLambert(){
-    smallSphere.lambert = this.value/100;
-    render(scene);
-}
-function changeSmallSphereAmbient(){
-    smallSphere.ambient = this.value/100;
-    render(scene);
+  smallSphere.lambert = this.value/100;
+  render(scene);
 }
 
+// ambient malej sfery
+function changeSmallSphereAmbient(){
+  smallSphere.ambient = this.value/100;
+  render(scene);
+}
+
+// obsluga sliderow z wlasciwosciami obiektow
 document.getElementById('bigSphereSpecular').onchange = changeBigSphereSpecular;
 document.getElementById('bigSphereLambert').onchange = changeBigSphereLambert;
 document.getElementById('bigSphereAmbient').onchange = changeBigSphereAmbient;
@@ -424,277 +284,203 @@ document.getElementById('smallSphereAmbient').onchange = changeSmallSphereAmbien
 
 render(scene);
 
+// funkcje obslugujace parametry kamery tzn translacje, obroty i zoom
+// translacja kamery w prawo
 function increaseCameraX() {
   currentX = scene.camera.point.x;
-   scene.camera.point.x += 5;
-   render(scene);
+  scene.camera.point.x += 5;
+  render(scene);
 }
 
+// translacja kamery w lewo
 function decreaseCameraX() {
   currentX = scene.camera.point.x;
-   scene.camera.point.x -= 5;
-   render(scene);
+  scene.camera.point.x -= 5;
+  render(scene);
 }
 
+// translacja kamery do gory
 function increaseCameraY() {
   currentY = scene.camera.point.y;
-   scene.camera.point.y += 5;
-   render(scene);
+  scene.camera.point.y += 5;
+  render(scene);
 }
 
+// translacja kamery w dol
 function decreaseCameraY() {
   currentY = scene.camera.point.y;
-   scene.camera.point.y -= 5;
-   render(scene);
+  scene.camera.point.y -= 5;
+  render(scene);
 }
 
+// translacja kamery do przodu
 function increaseCameraZ() {
   currentZ = scene.camera.point.z;
-   scene.camera.point.z += 5;
-   render(scene);
+  scene.camera.point.z += 5;
+  render(scene);
 }
 
+// translacja kamery do tylu
 function decreaseCameraZ() {
   currentZ = scene.camera.point.z;
-   scene.camera.point.z -= 5;
-   render(scene);
+  scene.camera.point.z -= 5;
+  render(scene);
 }
 
+// poszerzenie pola widzenia kamery
 function increaseFieldOfView() {
   currentFieldOfView = scene.camera.fieldOfView;
   scene.camera.fieldOfView += 5;
   render(scene);
 }
 
+// zmniejszenie pola widzenia kamery
 function decreaseFieldOfView() {
   currentFieldOfView = scene.camera.fieldOfView;
   scene.camera.fieldOfView -= 5;
   render(scene);
 }
 
-function initButtons() {
-  // transform functions bindings to buttons
-    $("#transformup").click(function() {
-      //moveUp();
-    decreaseCameraVectorY();
-    });
-
-    $("#transformdown").click(function() {
-      //moveDown();
-
-      increaseCameraVectorY();
-    });
-
-    $("#transformleft").click(function() {
-decreaseCameraVectorX();
-
-    });
-
-    $("#transformright").click(function() {
-increaseCameraVectorX();
-
-    });
-
-    $("#transformforward").click(function() {
-      decreaseCameraZ();
-    });
-
-    $("#transformbackward").click(function() {
-
-      increaseCameraZ();
-    });
-
-
-
-    // transform functions bindings to buttons
-      $("#transformLightup").click(function() {
-        //moveUp();
-      decreaseLightY();
-      });
-
-      $("#transformLightdown").click(function() {
-        //moveDown();
-
-        increaseLightY();
-      });
-
-      $("#transformLightleft").click(function() {
-    decreaseLightX();
-
-      });
-
-      $("#transformLightright").click(function() {
-    increaseLightX();
-
-      });
-
-      $("#transformLightforward").click(function() {
-        decreaseLightZ();
-      });
-
-      $("#transformLightbackward").click(function() {
-        increaseLightZ();
-      });
-
-
-
-
-
-
-
-    // rotate functions bindings to buttons
-    $("#rotateup").click(function() {
-      increaseCameraY();
-    });
-
-    $("#rotatedown").click(function() {
-      decreaseCameraY();
-    });
-
-    $("#rotateleft").click(function() {
-      increaseCameraX();
-    });
-
-    $("#rotateright").click(function() {
-      decreaseCameraX();
-    });
-
-    // zoom functions bindings to buttons
-    $("#zoomin").click(function() {
-
-      decreaseFieldOfView();
-    });
-
-    $("#zoomout").click(function() {
-      increaseFieldOfView();
-    });
-}
-
-////////////
+// obrot kamery w prawo
 function increaseCameraVectorX() {
   currentX = scene.camera.vector.x;
-   scene.camera.vector.x += 0.5;
-   render(scene);
+  scene.camera.vector.x += 0.5;
+  render(scene);
 }
 
+// obrot kamery w lewo
 function decreaseCameraVectorX() {
   currentX = scene.camera.vector.x;
-   scene.camera.vector.x -= 0.5;
-   render(scene);
+  scene.camera.vector.x -= 0.5;
+  render(scene);
 }
 
+// obrot kamery do gory
 function increaseCameraVectorY() {
   currentY = scene.camera.vector.y;
-   scene.camera.vector.y += 0.5;
-   render(scene);
+  scene.camera.vector.y += 0.5;
+  render(scene);
 }
 
+// obrot kamery w dol
 function decreaseCameraVectorY() {
   currentY = scene.camera.vector.y;
-   scene.camera.vector.y -= 0.5;
-   render(scene);
+  scene.camera.vector.y -= 0.5;
+  render(scene);
 }
 
-function increaseCameraVectorZ() {
-  currentZ = scene.camera.vector.z;
-   scene.camera.vector.z += 0.5;
-   render(scene);
-}
-
-function decreaseCameraVectorZ() {
-  currentZ = scene.camera.vector.z;
-   scene.camera.vector.z -= 0.5;
-   render(scene);
-}
-
-
-////////////////////////
+// funkcje zmiany parametrow zrodla swiatla
+// translacja zrodla swiatla w prawo
 function increaseLightX() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
-
-   currentX += 5;
-
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  scene.lights[0].x += 5;
+  render(scene);
 }
 
+// translacja zrodla swiatla w lewo
 function decreaseLightX() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
-
-   currentX -= 5;
-
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  scene.lights[0].x -= 5;
+  render(scene);
 }
 
+// translacja zrodla swiatla do gory
 function increaseLightY() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
-
-   currentY += 5;
-
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  scene.lights[0].y += 5;
+  render(scene);
 }
 
+// translacja zrodla swiatla do dolu
 function decreaseLightY() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
-
-   currentY -= 5;
-
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  scene.lights[0].y -= 5;
+  render(scene);
 }
 
+// translacja zrodla swiatla do przodu
 function increaseLightZ() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
-
-   currentZ += 5;
-
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  scene.lights[0].z += 5;
+  render(scene);
 }
 
+// translacja zrodla swiatla do tylu
 function decreaseLightZ() {
-  currentX = scene.lights[selectedLight].x;
-   currentY = scene.lights[selectedLight].y;
-   currentZ = scene.lights[selectedLight].z;
+  scene.lights[0].z -= 5;
+  render(scene);
+}
 
-   currentZ -= 5;
+// funkcja initujaca funkcje guzikow na panelu z guzikami
+function initButtons() {
+  // translacje kamery
+  $("#transformup").click(function() {
+    decreaseCameraVectorY();
+  });
 
-   scene.lights = [{
-     x: currentX,
-     y: currentY,
-     z: currentZ
-   }]
-   render(scene);
+  $("#transformdown").click(function() {
+    increaseCameraVectorY();
+  });
+
+  $("#transformleft").click(function() {
+    decreaseCameraVectorX();
+  });
+
+  $("#transformright").click(function() {
+    increaseCameraVectorX();
+  });
+
+  $("#transformforward").click(function() {
+    decreaseCameraZ();
+  });
+
+  $("#transformbackward").click(function() {
+    increaseCameraZ();
+  });
+
+  // rotacje kamery
+  $("#rotateup").click(function() {
+    increaseCameraY();
+  });
+
+  $("#rotatedown").click(function() {
+    decreaseCameraY();
+  });
+
+  $("#rotateleft").click(function() {
+    increaseCameraX();
+  });
+
+  $("#rotateright").click(function() {
+    decreaseCameraX();
+  });
+
+  // zoom
+  $("#zoomin").click(function() {
+    decreaseFieldOfView();
+  });
+
+  $("#zoomout").click(function() {
+    increaseFieldOfView();
+  });
+
+  // translacje zrodla swiatla
+  $("#transformLightup").click(function() {
+    decreaseLightY();
+  });
+
+  $("#transformLightdown").click(function() {
+    increaseLightY();
+  });
+
+  $("#transformLightleft").click(function() {
+    decreaseLightX();
+  });
+
+  $("#transformLightright").click(function() {
+    increaseLightX();
+  });
+
+  $("#transformLightforward").click(function() {
+    decreaseLightZ();
+  });
+
+  $("#transformLightbackward").click(function() {
+    increaseLightZ();
+  });
 }
