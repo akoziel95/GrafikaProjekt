@@ -12,6 +12,8 @@ var fillColor = getRandomColor();
 
 var objects = [];
 
+
+
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
@@ -234,6 +236,9 @@ function render(allObjects, ctx, dx, dy, howFar) {
 
   var facesToRender = getSortedFacesToRender(backfaceCulling(objectsToRender));
 
+  draw_sphere(100, 4, 0.4, new Vertex(0, 0, 0));
+  draw_sphere(100, 4, 0.1, new Vertex(400, 400, 0));
+  debugger;
 
   for (var j = 0, n_faces = facesToRender.length; j < n_faces; ++j) {
     // Current face
@@ -357,6 +362,47 @@ function GetNormalVector(face){
   return vector;
 }
 
+  function normalize(v){
+  var len=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+  v[0]/=len;
+  v[1]/=len;
+  v[2]/=len;
+  return v;
+}
+ 
+function dot(x,y){
+  var d=x[0]*y[0]+x[1]*y[1]+x[2]*y[2];
+  return d<0?-d:0;
+}
+ 
+function draw_sphere(R,k,ambient, centerPoint){
+  var i,j,intensity,b,vec,x,y,imgdata,idx;
+  var light=[30,30,-50],gR,gk,gambient;
+  light=normalize(light);
+
+  imgdata=ctx.createImageData(2*Math.ceil(R)+1,2*Math.ceil(R)+1);
+  idx=0;
+  for(i=Math.floor(-R);i<=Math.ceil(R);i++){
+    x=i+.5;
+    for(j=Math.floor(-R);j<=Math.ceil(R);j++){
+      y=j+.5;
+      if(x*x+y*y<=R*R){
+        vec=[x,y,Math.sqrt(R*R-x*x-y*y)];
+        vec=normalize(vec);
+        b=Math.pow(dot(light,vec),k)+ambient;
+        intensity=(1-b)*256;
+        if(intensity<0)intensity=0;
+        if(intensity>=256)intensity=255;
+        imgdata.data[idx++]=imgdata.data[idx++]=255-~~(intensity); //RG
+        imgdata.data[idx++]=imgdata.data[idx++]=255; //BA
+      } else {
+        imgdata.data[idx++]=imgdata.data[idx++]=imgdata.data[idx++]=imgdata.data[idx++]=255; //RGBA
+      }
+    }
+  }
+  ctx.putImageData(imgdata,centerPoint.x, centerPoint.y);
+}
+
 $(document).ready(function() {
   // Fix the canvas width and height
   var canvas = document.getElementById('cnv');
@@ -388,7 +434,7 @@ $(document).ready(function() {
   var rightBackCuboid= new Cuboid(rightback, 100, 100, 400);
   var leftBackCuboid= new Cuboid(leftback, 100, 100, 400);
 
-  objects = [rightCuboid, leftCuboid, rightBackCuboid, leftBackCuboid, wall];
+  //objects = [rightCuboid, leftCuboid, rightBackCuboid, leftBackCuboid, wall];
 
 
   function renderScene() {
@@ -674,4 +720,6 @@ $(document).ready(function() {
   function stopMove() {
     mousedown = false;
   }
+
+
 });
