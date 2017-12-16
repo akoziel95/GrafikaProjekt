@@ -19,149 +19,156 @@
 
 		<div class="row justify-content-md-center spacerow"></div>
 
-		<div class="row justify-content-md-center" id="buttonsrow">
-			<div class="col-md-auto" id="buttons0">
-				<div class="buttonbar">
-					Kamera:
-					<div class="translationsbuttons">
-						Translacje:
-						<button class="btn btn-default" id="transformup">
-							<span class="glyphicon glyphicon-menu-up"></span> Do góry
-						</button>
-						<button class="btn btn-default" id="transformdown">
-							<span class="glyphicon glyphicon-menu-down"></span> Do dołu
-						</button>
-						<button class="btn btn-default" id="transformleft">
-							<span class="glyphicon glyphicon-menu-left"></span> W lewo
-						</button>
-						<button class="btn btn-default" id="transformright">
-							<span class="glyphicon glyphicon-menu-right"></span> W prawo
-						</button>
-						<button class="btn btn-default" id="transformforward">
-							<span class="glyphicon glyphicon-chevron-up"></span> Do przodu
-						</button>
-						<button class="btn btn-default" id="transformbackward">
-							<span class="glyphicon glyphicon-chevron-down"></span> Do tyłu
-						</button>
-						Zoom:
-						<button class="btn btn-default" id="zoomin">
-							<span class="glyphicon glyphicon-plus"></span> Przybliż
-						</button>
-						<button class="btn btn-default" id="zoomout">
-							<span class="glyphicon glyphicon-minus"></span> Oddal
-						</button>
-					</div>
-					<!-- <div class="zoombuttons">
-						Zoom:
-						<button class="btn btn-default" id="zoomin">
-							<span class="glyphicon glyphicon-plus"></span> Przybliż (Z)
-						</button>
-						<button class="btn btn-default" id="zoomout">
-							<span class="glyphicon glyphicon-minus"></span> Oddal (X)
-						</button>
-					</div> -->
+
+	</div>
+	<div class="buttonscontainer">
+
+	<div class="row justify-content-md-center" id="buttonsrow">
+		<div class="col-md-auto" id="buttons0">
+			<div class="buttonbar">
+				Kamera:
+				<div class="translationsbuttons">
+					Translacje:
+					<button class="btn btn-default" id="transformup">
+						<span class="glyphicon glyphicon-menu-up"></span> Góra
+					</button>
+					<button class="btn btn-default" id="transformdown">
+						<span class="glyphicon glyphicon-menu-down"></span> Dół
+					</button>
+					<button class="btn btn-default" id="transformleft">
+						<span class="glyphicon glyphicon-menu-left"></span> Lewo
+					</button>
+					<button class="btn btn-default" id="transformright">
+						<span class="glyphicon glyphicon-menu-right"></span>Prawo
+					</button>
+					<button class="btn btn-default" id="transformforward">
+						<span class="glyphicon glyphicon-chevron-up"></span> Przód
+					</button>
+					<button class="btn btn-default" id="transformbackward">
+						<span class="glyphicon glyphicon-chevron-down"></span> Tył
+					</button>
+					Obroty:
+					<button class="btn btn-default" id="rotateup">
+						<span class="glyphicon glyphicon-arrow-up"></span> Góra
+					</button>
+					<button class="btn btn-default" id="rotatedown">
+						<span class="glyphicon glyphicon-arrow-down"></span> Dół
+					</button>
+					<button class="btn btn-default" id="rotateleft">
+						<span class="glyphicon glyphicon-arrow-left"></span> Lewo
+					</button>
+					<button class="btn btn-default" id="rotateright">
+						<span class="glyphicon glyphicon-arrow-right"></span> Prawo
+					</button>
+
+					Zoom:
+					<button class="btn btn-default" id="zoomin">
+						<span class="glyphicon glyphicon-plus"></span> Przybliż
+					</button>
+					<button class="btn btn-default" id="zoomout">
+						<span class="glyphicon glyphicon-minus"></span> Oddal
+					</button>
 				</div>
-
-				<div class="buttonbar">
-					Światło:
-					<div class="lightbuttons">
-						Translacje:
-						<button class="btn btn-default" id="transformLightup">
-							<span class="glyphicon glyphicon-menu-up"></span> Do góry
-						</button>
-						<button class="btn btn-default" id="transformLightdown">
-							<span class="glyphicon glyphicon-menu-down"></span> Do dołu
-						</button>
-						<button class="btn btn-default" id="transformLightleft">
-							<span class="glyphicon glyphicon-menu-left"></span> W lewo
-						</button>
-						<button class="btn btn-default" id="transformLightright">
-							<span class="glyphicon glyphicon-menu-right"></span> W prawo
-						</button>
-						<button class="btn btn-default" id="transformLightforward">
-							<span class="glyphicon glyphicon-chevron-up"></span> Do przodu
-						</button>
-						<button class="btn btn-default" id="transformLightbackward">
-							<span class="glyphicon glyphicon-chevron-down"></span> Do tyłu
-						</button>
-
-
-					</div>
-					<!-- <div class="zoombuttons">
-						Zoom:
-						<button class="btn btn-default" id="zoomin">
-							<span class="glyphicon glyphicon-plus"></span> Przybliż (Z)
-						</button>
-						<button class="btn btn-default" id="zoomout">
-							<span class="glyphicon glyphicon-minus"></span> Oddal (X)
-						</button>
-					</div> -->
-
-				</div>
-
-				<div class="buttonbar">
-					Duża sfera:
-					<div class="materialsbuttons">
-						Specular:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="10" class="slider" id="bigSphereSpecular">
-						</div>
-						Lambert:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="70" class="slider" id="bigSphereLambert">
-						</div>
-						Ambient:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="10" class="slider" id="bigSphereAmbient">
-						</div>
-
-						<!-- <button class="btn btn-default" id="rotateup">
-							<span class="glyphicon glyphicon-arrow-up"></span> Do góry
-						</button>
-						<button class="btn btn-default" id="rotatedown">
-							<span class="glyphicon glyphicon-arrow-down"></span> Do dołu
-						</button>
-						<button class="btn btn-default" id="rotateleft">
-							<span class="glyphicon glyphicon-arrow-left"></span> W lewo
-						</button>
-						<button class="btn btn-default" id="rotateright">
-							<span class="glyphicon glyphicon-arrow-right"></span> W prawo
-						</button> -->
-					</div>
-					Mała sfera:
-					<div class="zoombuttons">
-						Specular:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="10" class="slider" id="smallSphereSpecular">
-						</div>
-						Lambert:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="90" class="slider" id="smallSphereLambert">
-						</div>
-						Ambient:
-						<div class="sliderDiv">
-								<input type="range" min="0" max="100" value="0" class="slider" id="smallSphereAmbient">
-						</div>
-
-						<!-- <button class="btn btn-default" id="rotateup">
-							<span class="glyphicon glyphicon-arrow-up"></span> Do góry
-						</button>
-						<button class="btn btn-default" id="rotatedown">
-							<span class="glyphicon glyphicon-arrow-down"></span> Do dołu
-						</button>
-						<button class="btn btn-default" id="rotateleft">
-							<span class="glyphicon glyphicon-arrow-left"></span> W lewo
-						</button>
-						<button class="btn btn-default" id="rotateright">
-							<span class="glyphicon glyphicon-arrow-right"></span> W prawo
-						</button> -->
-					</div>
-
-				</div>
+				<!-- <div class="zoombuttons">
+					Zoom:
+					<button class="btn btn-default" id="zoomin">
+						<span class="glyphicon glyphicon-plus"></span> Przybliż (Z)
+					</button>
+					<button class="btn btn-default" id="zoomout">
+						<span class="glyphicon glyphicon-minus"></span> Oddal (X)
+					</button>
+				</div> -->
 			</div>
-			<div class="row justify-content-md-center spacerow"></div>
-		</div>
 
+			<div class="buttonbar">
+				Światło:
+				<div class="lightbuttons">
+					Translacje:
+					<button class="btn btn-default" id="transformLightup">
+						<span class="glyphicon glyphicon-menu-up"></span> Góra
+					</button>
+					<button class="btn btn-default" id="transformLightdown">
+						<span class="glyphicon glyphicon-menu-down"></span> Dół
+					</button>
+					<button class="btn btn-default" id="transformLightleft">
+						<span class="glyphicon glyphicon-menu-left"></span> Lewo
+					</button>
+					<button class="btn btn-default" id="transformLightright">
+						<span class="glyphicon glyphicon-menu-right"></span> Prawo
+					</button>
+					<button class="btn btn-default" id="transformLightforward">
+						<span class="glyphicon glyphicon-chevron-up"></span> Przód
+					</button>
+					<button class="btn btn-default" id="transformLightbackward">
+						<span class="glyphicon glyphicon-chevron-down"></span> Tył
+					</button>
+
+
+				</div>
+				<!-- <div class="zoombuttons">
+					Zoom:
+					<button class="btn btn-default" id="zoomin">
+						<span class="glyphicon glyphicon-plus"></span> Przybliż (Z)
+					</button>
+					<button class="btn btn-default" id="zoomout">
+						<span class="glyphicon glyphicon-minus"></span> Oddal (X)
+					</button>
+				</div> -->
+
+			</div>
+
+			<div class="buttonbar">
+				Duża sfera:
+				<div class="materialsbuttons">
+					Specular:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="10" class="slider" id="bigSphereSpecular">
+					</div>
+					Lambert:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="70" class="slider" id="bigSphereLambert">
+					</div>
+					Ambient:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="10" class="slider" id="bigSphereAmbient">
+					</div>
+
+
+				</div>
+				Mała sfera:
+				<div class="zoombuttons">
+					Specular:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="10" class="slider" id="smallSphereSpecular">
+					</div>
+					Lambert:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="90" class="slider" id="smallSphereLambert">
+					</div>
+					Ambient:
+					<div class="sliderDiv">
+							<input type="range" min="0" max="100" value="0" class="slider" id="smallSphereAmbient">
+					</div>
+
+					<!-- <button class="btn btn-default" id="rotateup">
+						<span class="glyphicon glyphicon-arrow-up"></span> Do góry
+					</button>
+					<button class="btn btn-default" id="rotatedown">
+						<span class="glyphicon glyphicon-arrow-down"></span> Do dołu
+					</button>
+					<button class="btn btn-default" id="rotateleft">
+						<span class="glyphicon glyphicon-arrow-left"></span> W lewo
+					</button>
+					<button class="btn btn-default" id="rotateright">
+						<span class="glyphicon glyphicon-arrow-right"></span> W prawo
+					</button> -->
+				</div>
+
+			</div>
+		</div>
+		<div class="row justify-content-md-center spacerow"></div>
+	</div>
+</div>
 		<script src="js/vector.js" type="text/javascript"></script>
 		<script src="js/index.js" type="text/javascript"></script>
 	</body>

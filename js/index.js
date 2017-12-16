@@ -1,46 +1,5 @@
-// # Raytracing
-//
-// **Raytracing** is a relatively simple way to render images of 3D objects.
-// The core is an elegant idea, that one can simulate the real-world behavior
-// of photons of light bouncing off of surfaces and colors accumulating from
-// their paths. It's not inherently fast, but the simplicity of the core lets
-// it model interesting things like reflections and depth of field in ways
-// that mirror natural processes.
-//
-// ## CS 301: Raytracing
-//
-// This happens to be a popular subject for education: implementing a raytracer
-// requires a student to understand vector math, fast code, and even recursion.
-// The reward is a pretty image - more compelling than the blasé debug output
-// that students get from most assignments.
-//
-// But it's still hard to learn: explanations are written either in the
-// language of mathematics or programming, and rarely connect all the dots.
-// Raytracer implementations tend to extremes: one
-// [fits on a business card](http://fabiensanglard.net/rayTracing_back_of_business_card/),
-// another [supports nearly every potential feature](http://www.povray.org/),
-// and most of the rest are [homework assignments](https://github.com/search?q=raytracer+cs&ref=cmdform),
-// implemented just enough to run, never enough to have comments and documentation.
-//
-// ## Literate Raytracer
-//
-// [Literate raytracer](https://github.com/tmcw/literate-raytracer) is a
-// simple implementation of raytracing in Javascript. It's [made to be
-// read as a narrative](http://macwright.org/literate-raytracer/), and intends
-// to [explain vector operations](http://macwright.org/literate-raytracer/vector.html) as well.
-//
-// # Setup
-// var c = document.getElementById('c'),
-//     width = 640 * 0.5,
-//     height = 480 * 0.5;
-
 initButtons();
 var c = document.getElementById('cnv');
-// Get a context in order to generate a proper data array. We aren't going to
-// use traditional Canvas drawing functions like `fillRect` - instead this
-// raytracer will directly compute pixel data and then put it into an image.
-//c.width = width;
-//c.height = height;
 c.style.width = '100%';
 c.style.height = '100%';
 c.width = c.offsetWidth;
@@ -70,8 +29,7 @@ var scene = {};
 // to the left side of its frame, and a `vector` which determines what
 // angle it points in.
 scene.camera = {
-    point: {
-        x: -8,
+    point: {x: -8,
         y: 0,
         z: 18
     },
@@ -83,24 +41,9 @@ scene.camera = {
     }
 };
 
-var lightSelected = 0
+var selectedLight = 0
 lightsToSelect =[ {
     x: -30,
-    y: -10,
-    z: 20
-},
-{
-    x: -10,
-    y: -10,
-    z: 20
-},
-{
-    x: 10,
-    y: -10,
-    z: 20
-},
-{
-    x: 30,
     y: -10,
     z: 20
 }]
@@ -414,25 +357,25 @@ function isLightVisible(pt, scene, light) {
 }
 
 function switchLight() {
-    switch(lightSelected){
+    switch(selectedLight){
         case 0:
             scene.lights =[lightsToSelect[0]];
-            lightSelected++;
+            selectedLight++;
             break;
         case 1:
             scene.lights =[lightsToSelect[1]];
-            lightSelected++;
+            selectedLight++;
             break;
         case 2:
             scene.lights =[lightsToSelect[2]];
-            lightSelected++;
+            selectedLight++;
             break;
         case 3:
             scene.lights =[lightsToSelect[3]];
-            lightSelected++;
+            selectedLight++;
             break;
         default:
-            lightSelected = 0
+            selectedLight = 0
             switchLight()
             break;
 
@@ -470,7 +413,6 @@ function changeSmallSphereAmbient(){
     render(scene);
 }
 
-//document.getElementById('switch').onclick = switchLight;
 document.getElementById('bigSphereSpecular').onchange = changeBigSphereSpecular;
 document.getElementById('bigSphereLambert').onchange = changeBigSphereLambert;
 document.getElementById('bigSphereAmbient').onchange = changeBigSphereAmbient;
@@ -602,27 +544,19 @@ increaseCameraVectorX();
 
     // rotate functions bindings to buttons
     $("#rotateup").click(function() {
-      //rotateUp();zoomIn
+      increaseCameraY();
     });
 
     $("#rotatedown").click(function() {
-      //rotateDown();
+      decreaseCameraY();
     });
 
     $("#rotateleft").click(function() {
-      //rotateLeft();
+      increaseCameraX();
     });
 
     $("#rotateright").click(function() {
-      //rotateRight();
-    });
-
-    $("#rotateleftaxis").click(function() {
-      //rotateLeftAxis();
-    });
-
-    $("#rotaterightaxis").click(function() {
-      //rotateRightAxis();
+      decreaseCameraX();
     });
 
     // zoom functions bindings to buttons
@@ -676,9 +610,9 @@ function decreaseCameraVectorZ() {
 
 ////////////////////////
 function increaseLightX() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentX += 5;
 
@@ -691,9 +625,9 @@ function increaseLightX() {
 }
 
 function decreaseLightX() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentX -= 5;
 
@@ -706,9 +640,9 @@ function decreaseLightX() {
 }
 
 function increaseLightY() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentY += 5;
 
@@ -721,9 +655,9 @@ function increaseLightY() {
 }
 
 function decreaseLightY() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentY -= 5;
 
@@ -736,9 +670,9 @@ function decreaseLightY() {
 }
 
 function increaseLightZ() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentZ += 5;
 
@@ -751,9 +685,9 @@ function increaseLightZ() {
 }
 
 function decreaseLightZ() {
-  currentX = scene.lights[lightSelected].x;
-   currentY = scene.lights[lightSelected].y;
-   currentZ = scene.lights[lightSelected].z;
+  currentX = scene.lights[selectedLight].x;
+   currentY = scene.lights[selectedLight].y;
+   currentZ = scene.lights[selectedLight].z;
 
    currentZ -= 5;
 
@@ -764,20 +698,3 @@ function decreaseLightZ() {
    }]
    render(scene);
 }
-
-// function decreaseCameraX() {
-//   currentX = scene.camera.point.x;
-//   scene.camera = {
-//       point: {
-//           x: currentX - 5,
-//           y: 1.8,
-//           z: 10
-//       },
-//       fieldOfView: 45,
-//       vector: {
-//           x: 0,
-//           y: 3,
-//           z: 0
-//       }
-//   };
-// }
