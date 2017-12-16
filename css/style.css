@@ -8,12 +8,11 @@ html, body {
 }
 
 .spacerow {
-  height: 5%;
+  height: 2%;
 }
 
 #boardrow {
   height: 70%;
-  /*background-color: red;*/
 }
 
 #buttonsrow {
@@ -42,7 +41,12 @@ canvas {
   margin-top: 5px;
 }
 
-.translationsbuttons, .rotationsbuttons, .zoombuttons {
+.sliderDiv {
+  width: 50px;
+  display: inline-block;
+}
+
+.translationsbuttons, .materialsbuttons, .zoombuttons, .lightbuttons {
   padding: 5px;
   display: inline-block;
 }
@@ -51,12 +55,16 @@ canvas {
   background-color: #E1FFFE;
 }
 
-.rotationsbuttons {
+.materialsbuttons {
   background-color: #E8FFD9;
 }
 
-.zoombuttons {
+.lightbuttons {
   background-color: #FFF7B7;
+}
+
+.zoombuttons {
+  background-color: #ffdbf2;
 }
 
 .playground {
